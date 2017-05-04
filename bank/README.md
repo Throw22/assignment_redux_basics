@@ -22,7 +22,7 @@ transaction objects
   (optional)account2:
 }
 
-state ={
+state = {
   accounts: [
     {
       id: 1,

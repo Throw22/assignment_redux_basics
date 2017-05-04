@@ -6,11 +6,12 @@ const initialAccountState = {
     {
       id: 1,
       balance: 0,
-      transactions: []
+      transactions: [] //no need to duplicate
     }
   ],
   selectedAccount: {},
   transactions: []
+  //Are we expecting more accounts with fewer transactions or fewer accounts with more transactions?
 };
 
 function accounts(state = initialAccountState, action) {
@@ -20,6 +21,10 @@ function accounts(state = initialAccountState, action) {
 
   switch (action.type) {
     case SET_SELECTED_ACCOUNT:
+      //Filter for account or make employee enter full account object?
+      // newSelectedAccount = state.accounts.filter(accout => {
+      //   return account.id == data.id;
+      // })
       return {
         ...state,
         selectedAccount: action.data
