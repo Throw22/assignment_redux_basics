@@ -23,30 +23,40 @@ let unsubscribe = store.subscribe(() => {
 
 console.log('initial store state:', store.getState());
 
-store.dispatch(addItem({
-  name: 'Tasty cucumber',
-  description: 'It is tasty',
-  category: 'Weapons',
-  purchased: true,
-  amount: 13
-}));
+store.dispatch(
+  addItem({
+    name: 'Tasty cucumber',
+    description: 'It is tasty',
+    category: 'Weapons',
+    purchased: true,
+    amount: 13
+  })
+);
 
-store.dispatch(addItem({
-  name: 'Healthy cucumber',
-  description: 'It is healthy',
-  category: 'Weapons',
-  purchased: false,
-  amount: 20
-}));
+store.dispatch(
+  addItem({
+    name: 'Healthy cucumber',
+    description: 'It is healthy',
+    category: 'Weapons',
+    purchased: false,
+    amount: 20
+  })
+);
 
-store.dispatch(addItem({
-  name: 'Gross cucumber',
-  description: 'It is gross',
-  category: 'Toys',
-  purchased: true,
-  amount: 6
-}));
+store.dispatch(
+  addItem({
+    name: 'Gross cucumber',
+    description: 'It is gross',
+    category: 'Toys',
+    purchased: true,
+    amount: 6
+  })
+);
 
 store.dispatch(setPurchasedFilter('PURCHASED'));
+
+store.dispatch(setCategoryFilter('WEAPONS'));
+
+store.dispatch(setSort('DESCRIPTION'));
 
 unsubscribe();
