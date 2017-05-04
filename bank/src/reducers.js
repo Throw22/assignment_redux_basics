@@ -5,8 +5,11 @@ const initialAccountState = {
   accounts: [
     {
       id: 1,
-      balance: 0,
-      transactions: [] //no need to duplicate
+      balance: 0
+    },
+    {
+      id: 2,
+      balance: 0
     }
   ],
   selectedAccount: {},
@@ -20,6 +23,7 @@ function accounts(state = initialAccountState, action) {
   let newAccounts;
 
   switch (action.type) {
+
     case SET_SELECTED_ACCOUNT:
       //Filter for account or make employee enter full account object?
       // newSelectedAccount = state.accounts.filter(accout => {
@@ -29,6 +33,7 @@ function accounts(state = initialAccountState, action) {
         ...state,
         selectedAccount: action.data
       };
+
     case DEPOSIT:
       newTransaction = {
         type: 'deposit',
@@ -41,13 +46,10 @@ function accounts(state = initialAccountState, action) {
         if (account.id === state.selectedAccount.id) {
           updatedAccount = {
             ...account,
-            balance: account.balance + action.data.amount,
-            transactions: [...account.transactions, newTransaction]
+            balance: account.balance + action.data.amount
           };
-
-          return updatedAccount;
         }
-        return account;
+        return updatedAccount;
       });
       return {
         ...state,
@@ -55,6 +57,7 @@ function accounts(state = initialAccountState, action) {
         selectedAccount: updatedAccount,
         transactions: [...state.transactions, newTransaction]
       };
+
     case WITHDRAW:
       newTransaction = {
         type: 'withdraw',
@@ -67,12 +70,10 @@ function accounts(state = initialAccountState, action) {
         if (account.id === state.selectedAccount.id) {
           updatedAccount = {
             ...account,
-            balance: account.balance - action.data.amount,
-            transactions: [...account.transactions, newTransaction]
+            balance: account.balance - action.data.amount
           };
-          return updatedAccount;
         }
-        return account;
+        return updatedAccount;
       });
       return {
         ...state,
@@ -89,6 +90,29 @@ function accounts(state = initialAccountState, action) {
         destination: action.data.destination,
         date: action.data.date
       };
+      newAccounts = state.accounts.map(account => {
+        if (account.id === action.data.origin) {
+          updatedAccount = {
+            ...account,
+            balance: account.balance - action.data.amount
+          }
+          return updatedAccount;
+        } else if (account.id === action.data.destination) {
+          updatedAccount = {
+            ...account,
+            balance: account.balance + action.data.amount
+          }
+          return updatedAccount;
+        } else {
+          return account;
+        }
+      });
+      return {
+        ...state,
+        accounts: newAccounts,
+        transactions: [...state.transactions, newTransaction]
+      };
+
     default:
       return state;
   }

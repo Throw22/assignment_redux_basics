@@ -19,8 +19,7 @@ console.log('Initial bank state:', store.getState());
 store.dispatch(
   setSelectedAccount({
     id: 1,
-    balance: 0,
-    transactions: []
+    balance: 0
   })
 );
 
@@ -39,3 +38,12 @@ store.dispatch(
     date: Date.now()
   })
 );
+
+store.dispatch(
+  transfer({
+    origin: 1,
+    destination: 2,
+    amount: 50,
+    date: Date.now()
+  })
+)
