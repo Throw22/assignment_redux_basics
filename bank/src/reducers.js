@@ -1,34 +1,23 @@
 import { combineReducers } from 'redux';
-
-//import actions here
-import {
-  SET_SELECTED_ACCOUNT,
-  DEPOSIT
-} from "./actions";
-
-// state ={
-//   accounts: [
-//     {
-//       id: 1,
-//       balance: 100,
-//       transations: [{ type: withdrawal, amount: 100, source: bank/account, end: bank/account, date}]
-//     },
-//     {
-//       id: 2,
-//       balance: 500
-//     }
-//   ],
-//   selectedaccount: {},
-//   transactions: [{ type: withdrawal, amount: 100, source: bank/account, end: bank/account, date},{ type: withdrawal, amount: 100, source: bank/account, end: bank/account}]
-// }
+import { SET_SELECTED_ACCOUNT, DEPOSIT, WITHDRAW, TRANSFER } from './actions';
 
 const initialAccountState = {
-  accounts: [],
+  accounts: [
+    {
+      id: 1,
+      balance: 0,
+      transactions: []
+    }
+  ],
   selectedAccount: {},
   transactions: []
-}
+};
 
 function accounts(state = initialAccountState, action) {
+  let updatedAccount;
+  let newTransaction;
+  let newAccounts;
+
   switch (action.type) {
     case SET_SELECTED_ACCOUNT:
       return {
@@ -36,29 +25,65 @@ function accounts(state = initialAccountState, action) {
         selectedAccount: action.data
       };
     case DEPOSIT:
-      let newTransaction = {
+      newTransaction = {
         type: 'deposit',
         amount: action.data.amount,
         origin: null,
-        destination: action.data.destination,
-        date: Date.now()
-      }
-      let newAccounts = state.acounts.map(account => {
-        if (account.id === action.data.destination) {
-          return {
+        destination: state.selectedAccount.id,
+        date: action.data.date
+      };
+      newAccounts = state.accounts.map(account => {
+        if (account.id === state.selectedAccount.id) {
+          updatedAccount = {
             ...account,
             balance: account.balance + action.data.amount,
             transactions: [...account.transactions, newTransaction]
-          }
+          };
+
+          return updatedAccount;
         }
         return account;
       });
       return {
         ...state,
         accounts: newAccounts,
+        selectedAccount: updatedAccount,
+        transactions: [...state.transactions, newTransaction]
+      };
+    case WITHDRAW:
+      newTransaction = {
+        type: 'withdraw',
+        amount: action.data.amount,
+        origin: state.selectedAccount.id,
+        destination: null,
+        date: action.data.date
+      };
+      newAccounts = state.accounts.map(account => {
+        if (account.id === state.selectedAccount.id) {
+          updatedAccount = {
+            ...account,
+            balance: account.balance - action.data.amount,
+            transactions: [...account.transactions, newTransaction]
+          };
+          return updatedAccount;
+        }
+        return account;
+      });
+      return {
+        ...state,
+        accounts: newAccounts,
+        selectedAccount: updatedAccount,
         transactions: [...state.transactions, newTransaction]
       };
 
+    case TRANSFER:
+      newTransaction = {
+        type: 'transfer',
+        amount: action.data.amount,
+        origin: action.data.origin,
+        destination: action.data.destination,
+        date: action.data.date
+      };
     default:
       return state;
   }
