@@ -1,5 +1,11 @@
 import { combineReducers } from 'redux';
-import { SET_SELECTED_ACCOUNT, DEPOSIT, WITHDRAW, TRANSFER } from './actions';
+import {
+  SET_SELECTED_ACCOUNT,
+  DEPOSIT,
+  WITHDRAW,
+  TRANSFER,
+  SET_DATE_FILTER
+} from './actions';
 
 const initialAccountState = {
   accounts: [
@@ -17,13 +23,23 @@ const initialAccountState = {
   //Are we expecting more accounts with fewer transactions or fewer accounts with more transactions?
 };
 
+//Filter reducer
+function dateFilter(state = { startDate: 0, endDate: Date.now() }, action) {
+  switch (action.type) {
+    case SET_DATE_FILTER:
+      return action.data;
+    default:
+      return state;
+  }
+}
+
+//Account reducer
 function accounts(state = initialAccountState, action) {
   let updatedAccount;
   let newTransaction;
   let newAccounts;
 
   switch (action.type) {
-
     case SET_SELECTED_ACCOUNT:
       //Filter for account or make employee enter full account object?
       // newSelectedAccount = state.accounts.filter(accout => {
@@ -48,8 +64,9 @@ function accounts(state = initialAccountState, action) {
             ...account,
             balance: account.balance + action.data.amount
           };
+          return updatedAccount;
         }
-        return updatedAccount;
+        return account;
       });
       return {
         ...state,
@@ -59,6 +76,10 @@ function accounts(state = initialAccountState, action) {
       };
 
     case WITHDRAW:
+      if (state.selectedAccount.balance < action.data.amount) {
+        return state;
+      }
+
       newTransaction = {
         type: 'withdraw',
         amount: action.data.amount,
@@ -66,14 +87,16 @@ function accounts(state = initialAccountState, action) {
         destination: null,
         date: action.data.date
       };
+
       newAccounts = state.accounts.map(account => {
         if (account.id === state.selectedAccount.id) {
           updatedAccount = {
             ...account,
             balance: account.balance - action.data.amount
           };
+          return updatedAccount;
         }
-        return updatedAccount;
+        return account;
       });
       return {
         ...state,
@@ -83,6 +106,13 @@ function accounts(state = initialAccountState, action) {
       };
 
     case TRANSFER:
+      let origin = state.accounts.find(account => {
+        return account.id === action.data.origin;
+      });
+      if (origin.balance < action.data.amount) {
+        return state;
+      }
+
       newTransaction = {
         type: 'transfer',
         amount: action.data.amount,
@@ -90,18 +120,19 @@ function accounts(state = initialAccountState, action) {
         destination: action.data.destination,
         date: action.data.date
       };
+
       newAccounts = state.accounts.map(account => {
         if (account.id === action.data.origin) {
           updatedAccount = {
             ...account,
             balance: account.balance - action.data.amount
-          }
+          };
           return updatedAccount;
         } else if (account.id === action.data.destination) {
           updatedAccount = {
             ...account,
             balance: account.balance + action.data.amount
-          }
+          };
           return updatedAccount;
         } else {
           return account;
@@ -112,12 +143,12 @@ function accounts(state = initialAccountState, action) {
         accounts: newAccounts,
         transactions: [...state.transactions, newTransaction]
       };
-
     default:
       return state;
   }
 }
 
 export const bankApp = combineReducers({
-  accounts
+  accounts,
+  dateFilter
 });

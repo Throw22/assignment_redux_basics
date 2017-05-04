@@ -5,7 +5,13 @@ import './index.css';
 
 import { createStore } from 'redux';
 import { bankApp } from './reducers';
-import { setSelectedAccount, deposit, withdraw, transfer } from './actions';
+import {
+  setSelectedAccount,
+  deposit,
+  withdraw,
+  transfer,
+  setDateFilter
+} from './actions';
 
 let store = createStore(bankApp);
 
@@ -46,4 +52,28 @@ store.dispatch(
     amount: 50,
     date: Date.now()
   })
-)
+);
+
+store.dispatch(
+  withdraw({
+    origin: 1,
+    amount: 10000,
+    date: Date.now()
+  })
+);
+
+store.dispatch(
+  transfer({
+    origin: 1,
+    destination: 2,
+    amount: 10000,
+    date: Date.now()
+  })
+);
+
+store.dispatch(
+  setDateFilter({
+    startDate: 2304925,
+    endDate: 5048939
+  })
+);
